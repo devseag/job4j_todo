@@ -1,6 +1,8 @@
 package ru.job4j.todo.persistence;
 
+import java.util.Map;
 import java.util.Optional;
+
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.HibernateException;
@@ -14,45 +16,52 @@ import ru.job4j.todo.model.User;
 @AllArgsConstructor
 public class HibernateUserStore implements UserStore {
 
-    private final SessionFactory sf;
+    //    private final SessionFactory sf;
+    private final CrudStore crudStore;
 
     @Override
     public Optional<User> save(User user) {
-        Session session = sf.openSession();
+//        Session session = sf.openSession();
         Optional<User> result = Optional.empty();
-        try {
-            session.beginTransaction();
-            session.save(user);
-            session.getTransaction().commit();
+//        try {
+//            session.beginTransaction();
+//            session.save(user);
+//            session.getTransaction().commit();
+        if (crudStore.run(session -> session.save(user))) {
             result = Optional.of(user);
-        } catch (HibernateException e) {
-            session.getTransaction().rollback();
-            log.error(e.getMessage(), e);
-        } finally {
-            session.close();
+//        } catch (HibernateException e) {
+//            session.getTransaction().rollback();
+//            log.error(e.getMessage(), e);
+//        } finally {
+//            session.close();
         }
         return result;
     }
 
     @Override
     public Optional<User> findByLoginAndPassword(String login, String password) {
-        Session session = sf.openSession();
-        Optional<User> result = Optional.empty();
-        try {
-            session.beginTransaction();
-            result = session.createQuery("FROM User WHERE login = :uLogin AND password = :uPassword",
-                            User.class)
-                    .setParameter("uLogin", login)
-                    .setParameter("uPassword", password)
-                    .uniqueResultOptional();
-            session.getTransaction().commit();
-        } catch (HibernateException e) {
-            session.getTransaction().rollback();
-            log.error(e.getMessage(), e);
-        } finally {
-            session.close();
-        }
-        return result;
+//        Session session = sf.openSession();
+//        Optional<User> result = Optional.empty();
+//        try {
+//            session.beginTransaction();
+//            result = session.createQuery("FROM User WHERE login = :uLogin AND password = :uPassword",
+//                            User.class)
+//                    .setParameter("uLogin", login)
+//                    .setParameter("uPassword", password)
+//                    .uniqueResultOptional();
+//            session.getTransaction().commit();
+//        } catch (HibernateException e) {
+//            session.getTransaction().rollback();
+//            log.error(e.getMessage(), e);
+//        } finally {
+//            session.close();
+//        }
+//        return result;
+        return crudStore.optional(
+                "FROM User WHERE login = :uLogin AND password = :uPassword",
+                User.class,
+                Map.of("uLogin", login, "uPassword", password)
+        );
     }
 
 }
