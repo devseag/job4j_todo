@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+
+    <!-- Zavisimost' Bootstrap-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device=width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
+
+    <title>Spisok zadach</title>
+</head>
+
+<body>
+<div class="container-fluid p-0">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-grey">
+        <div class="container">
+            <a class="navbar-brand text-secondary" href="/"><h2>ToDo List</h2></a>
+            <div class="collapse navbar-collapse">
+                <div class="col-1"></div>
+                <div class="btn-group col-3">
+                    <button type="button" class="btn btn-outline-secondary btn-sm w-100">Vybor zadach</button>
+                    <button type="button" class="btn btn-secondary btn-sm dropdown-toggle dropdown-toggle-split dropstart w-10" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="visually-hidden">Toggle Dropdown</span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" th:href="@{/tasks/all}">Vse zadachi</a></li>
+                        <li><a class="dropdown-item" th:href="@{/tasks/done}">Vypolnennye</a></li>
+                        <li><a class="dropdown-item" th:href="@{/tasks/new}">Novye</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="row">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th scope="col" style="width: 50px;"><i class="bi bi-body-text"></i></th>
+                    <th scope="col">Nazvanie zadachi</th>
+                    <th class="text-center" scope="col" style="width: 150px;">Cozdana</th>
+                    <th class="text-center" scope="col" style="width: 135px;">Vypolnena</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="task : ${tasks}">
+                    <td><a class="btn btn-sm btn-outline-primary" th:href="@{/tasks/{taskId}(taskId=${task.id})}"><i class="bi bi-eye"></i></a></td>
+                    <td th:text="${task.name}"/>
+                    <td class="text-center" th:text="${task.created}"/>
+                    <td class="text-center">
+              <span th:if="${task.done}">
+                <i class="bi bi-check2-circle"></i>
+              </span>
+                        <span th:if="${!task.done}">
+                <i class="bi bi-circle"></i>
+              </span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="d-grid gap-2">
+            <a class="btn btn-primary" th:href="@{/tasks/create}"><i class="bi bi-plus-lg"></i></a>
+        </div>
+    </div>
+</div>
+</body>
+</html>
