@@ -15,21 +15,32 @@
 
 <body>
 <div class="container-fluid p-0">
-    <header th:insert="blocks/header :: header_main"></header>
+    <header th:insert="~{blocks/header :: header_main}"></header>
     <div class="container col-9">
         <form th:action="@{/tasks/edit}" method="post" th:object="${task}">
             <input type="hidden" name="id" th:field="*{id}">
             <div class="mb-3">
                 <label for="name" class="form-label fs-6"><b>Nazvanie zadachi</b></label>
-                <input type="text" class="form-control" id="name" name="name" th:field="*{name}" placeholder="Nazvanie zadachi"></input>
+                <input type="text" class="form-control" id="name" name="name" th:field="*{name}" placeholder="Nazvanie zadachi">
             </div>
             <div class="mb-3">
                 <label for="description" class="form-label fs-6"><b>Opisanie zadachi</b></label>
                 <textarea class="form-control" id="description" name="description" rows="9" th:field="*{description}" placeholder="Opisanie zadachi"></textarea>
             </div>
-            <div class="mb-3 col-3">
-                <label for="created" class="fs-6"><b>Sozdana:</b></label>
-                <input type="date" id="created" name="created" class="form-control" th:field="*{created}">
+            <div class="row">
+                <div class="mb-3 col-3">
+                    <label for="created" class="fs-6"><b>Sozdana:</b></label>
+                    <input type="date" id="created" name="created" class="form-control" th:field="*{created}">
+                </div>
+                <div class="col-6"></div>
+                <div class="mb-3 col-3">
+                    <label for="priority.id"><b>Prioritet: </b></label>
+                    <select class="form-control" id="priority.id" name="priority.id">
+                        <option class="text-danger" th:value="1" th:text="Srochnaja" th:selected="*{priority.position == 1}"></option>
+                        <option class="text-primary" th:value="2" th:text="Obychnaja" th:selected="*{priority.position == 2}"></option>
+                        <option class="text-success" th:value="3" th:text="Vtorostepennaja" th:selected="*{priority.position == 3}"></option>
+                    </select>
+                </div>
             </div>
             <div class="mb-3">
                 <input type="checkbox" id="done" name="done" class="form-check-input" th:field="*{done}">
@@ -44,7 +55,7 @@
                 </div>
             </div>
         </form>
-        <footer th:insert="blocks/footer :: footer"></footer>
+        <footer th:insert="~{blocks/footer :: footer}"></footer>
     </div>
 </div>
 </body>
