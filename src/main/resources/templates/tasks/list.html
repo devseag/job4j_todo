@@ -15,7 +15,7 @@
 
 <body>
 <div class="container-fluid p-0">
-    <header th:insert="blocks/header :: header_main"></header>
+    <header th:insert="~{blocks/header :: header_main}"></header>
     <div class="container">
         <div class="row">
             <table class="table table-hover">
@@ -23,15 +23,19 @@
                 <tr>
                     <th scope="col" style="width: 50px;"><i class="bi bi-body-text"></i></th>
                     <th scope="col">Nazvanie zadachi</th>
-                    <th class="text-center" scope="col" style="width: 150px;">Cozdana</th>
+                    <th class="text-center" scope="col" style="width: 200px;">Cozdana</th>
                     <th class="text-center" scope="col" style="width: 135px;">Vypolnena</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="task : ${tasks}">
                     <td><a class="btn btn-sm btn-outline-primary" th:href="@{/tasks/{taskId}(taskId=${task.id})}"><i class="bi bi-eye"></i></a></td>
-                    <td th:text="${task.name}"/>
-                    <td class="text-center" th:text="${task.created}"/>
+                    <td>
+                        <span class="text-danger" th:if="${task.priority.position == 1}" th:text="${task.name}"></span>
+                        <span class="text-primary" th:if="${task.priority.position == 2}" th:text="${task.name}"></span>
+                        <span class="text-success" th:if="${task.priority.position == 3}" th:text="${task.name}"></span>
+                    </td>
+                    <td class="text-center" th:text="${#temporals.format(task.created, 'dd-MM-yyyy HH:mm')}"/>
                     <td class="text-center">
               <span th:if="${task.done}">
                 <i class="bi bi-check2-circle"></i>
@@ -43,11 +47,14 @@
                 </tr>
                 </tbody>
             </table>
+            <div class="col-4 text-start fs-5 font-monospace text-danger">Srochnye</div>
+            <div class="col-4 text-center fs-5 font-monospace text-primary">Obychnye</div>
+            <div class="col-4 text-end fs-5 font-monospace text-success">Vtorostepennye</div>
         </div>
         <div class="d-grid gap-2">
             <a class="btn btn-primary" th:href="@{/tasks/create}"><i class="bi bi-plus-lg"></i></a>
         </div>
-        <footer th:insert="blocks/footer :: footer"></footer>
+        <footer th:insert="~{blocks/footer :: footer}"></footer>
     </div>
 </div>
 </body>

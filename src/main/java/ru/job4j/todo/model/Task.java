@@ -1,6 +1,6 @@
 package ru.job4j.todo.model;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.*;
@@ -40,8 +40,8 @@ public class Task {
     )
     private Set<Category> categories = new HashSet<>();
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate created = LocalDate.now();
+    @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm")
+    private LocalDateTime created = LocalDateTime.now();
 
     private boolean done;
 
