@@ -3,12 +3,17 @@ package ru.job4j.todo.controller;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Optional;
+//import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.todo.model.Task;
+import ru.job4j.todo.model.User;
 import ru.job4j.todo.service.TaskService;
+import ru.job4j.todo.service.UserService;
+
+import javax.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/tasks")
@@ -16,10 +21,12 @@ import ru.job4j.todo.service.TaskService;
 public class TaskController {
 
     private final TaskService taskService;
+    private final UserService userService;
 
     @GetMapping("/all")
-    public String getAllTasks(Model model) {
-        Collection<Task> tasks = taskService.findAll().stream()
+    public String getAllTasks(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        Collection<Task> tasks = taskService.findAllForUser(user).stream()
                 .sorted(Comparator.comparing(Task::getId))
                 .toList();
         model.addAttribute("tasks", tasks);
@@ -27,15 +34,17 @@ public class TaskController {
     }
 
     @GetMapping("/done")
-    public String getDoneTasks(Model model) {
-        Collection<Task> tasks = taskService.findDone();
+    public String getDoneTasks(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        Collection<Task> tasks = taskService.findDoneForUser(user);
         model.addAttribute("tasks", tasks);
         return "tasks/list";
     }
 
     @GetMapping("/new")
-    public String getNewTasks(Model model) {
-        Collection<Task> tasks = taskService.findNew();
+    public String getNewTasks(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        Collection<Task> tasks = taskService.findNewForUser(user);
         model.addAttribute("tasks", tasks);
         return "tasks/list";
     }
@@ -46,8 +55,9 @@ public class TaskController {
     }
 
     @PostMapping("/create")
-    public String create(@ModelAttribute Task task) {
-        taskService.save(task);
+    public String create(@ModelAttribute Task task, HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        taskService.save(task, user);
         return "redirect:/tasks/all";
     }
 
@@ -94,8 +104,9 @@ public class TaskController {
     }
 
     @PostMapping("/edit")
-    public String editTask(@ModelAttribute Task task, Model model) {
-        boolean isUpdated = taskService.update(task);
+    public String editTask(@ModelAttribute Task task, HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        boolean isUpdated = taskService.update(task, user);
         if (!isUpdated) {
             model.addAttribute("message", "Oshibka pri obnovlenii zadachi");
             return "errors/404";

@@ -40,7 +40,7 @@ public class CrudStore {
             for (Map.Entry<String, Object> arg : args.entrySet()) {
                 sessionQuery.setParameter(arg.getKey(), arg.getValue());
             }
-            sessionQuery.executeUpdate();
+           sessionQuery.executeUpdate();
         };
         return run(command);
     }

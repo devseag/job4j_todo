@@ -21,4 +21,5 @@ public class SimpleUserService implements UserService {
     public Optional<User> findByLoginAndPassword(String login, String password) {
         return userStore.findByLoginAndPassword(login, password);
     }
+
 }
