@@ -21,7 +21,7 @@ public class HibernateTaskStore implements TaskStore {
      */
     @Override
     public Task save(Task task) {
-        crudStore.run(session -> session.save(task));
+        crudStore.run(session -> session.persist(task));
         return task;
     }
 
@@ -32,7 +32,9 @@ public class HibernateTaskStore implements TaskStore {
      */
     @Override
     public Optional<Task> findById(int id) {
-        return crudStore.optional("FROM Task WHERE id = :tId", Task.class, Map.of("tId", id));
+        return crudStore.optional("FROM Task t JOIN FETCH t.priority WHERE t.id = :tId",
+                Task.class,
+                Map.of("tId", id));
     }
 
     /**
@@ -42,7 +44,9 @@ public class HibernateTaskStore implements TaskStore {
      */
     @Override
     public Collection<Task> findAllByUserId(int id) {
-        return crudStore.query("FROM Task WHERE user_id = :uId", Task.class, Map.of("uId", id));
+        return crudStore.query("FROM Task t JOIN FETCH t.priority WHERE user_id = :uId",
+                Task.class,
+                Map.of("uId", id));
     }
 
     /**
@@ -53,7 +57,7 @@ public class HibernateTaskStore implements TaskStore {
     @Override
     public Collection<Task> findDoneByUserId(int id) {
         return crudStore.query(
-                "FROM Task WHERE done = true AND user_id = :uId",
+                "FROM Task t JOIN FETCH t.priority WHERE done = true AND user_id = :uId",
                 Task.class,
                 Map.of("uId", id)
         );
@@ -68,7 +72,7 @@ public class HibernateTaskStore implements TaskStore {
     public Collection<Task> findNewByUserId(int id) {
         LocalDate afterDate = LocalDate.now().minusWeeks(1);
         return crudStore.query(
-                "FROM Task WHERE created > :afterDate AND user_id = :uId",
+                "FROM Task t JOIN FETCH t.priority WHERE created > :afterDate AND user_id = :uId",
                 Task.class,
                 Map.of("afterDate", afterDate, "uId", id));
     }
@@ -80,7 +84,7 @@ public class HibernateTaskStore implements TaskStore {
      */
     @Override
     public boolean update(Task task) {
-        return crudStore.run(session -> session.update(task));
+        return crudStore.run(session -> session.merge(task));
     }
 
     /**

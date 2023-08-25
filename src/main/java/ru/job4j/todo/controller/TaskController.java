@@ -2,15 +2,18 @@ package ru.job4j.todo.controller;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 //import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import ru.job4j.todo.model.Category;
 import ru.job4j.todo.model.Priority;
 import ru.job4j.todo.model.Task;
 import ru.job4j.todo.model.User;
+import ru.job4j.todo.service.CategoryService;
 import ru.job4j.todo.service.PriorityService;
 import ru.job4j.todo.service.TaskService;
 
@@ -23,6 +26,7 @@ public class TaskController {
 
     private final TaskService taskService;
     private final PriorityService priorityService;
+    private final CategoryService categoryService;
 
     @GetMapping("/all")
     public String getAllTasks(Model model, HttpSession session) {
@@ -53,14 +57,19 @@ public class TaskController {
     @GetMapping("/create")
     public String getCreationPage(Model model) {
         Collection<Priority> priorities = priorityService.findAll();
+        Collection<Category> categories = categoryService.findAll();
         model.addAttribute("priorities", priorities);
+        model.addAttribute("categories", categories);
         return "tasks/create";
     }
 
     @PostMapping("/create")
-    public String create(@ModelAttribute Task task, HttpSession session, Model model) {
+    public String create(@ModelAttribute Task task,
+                         @RequestParam(name = "categoriesId") List<Integer> categoriesId,
+                         HttpSession session,
+                         Model model) {
         User user = (User) session.getAttribute("user");
-        taskService.save(task, user);
+        taskService.save(task, user, categoriesId);
         return "redirect:/tasks/all";
     }
 
@@ -103,17 +112,20 @@ public class TaskController {
             return "errors/404";
         }
         Collection<Priority> priorities = priorityService.findAll();
+        Collection<Category> categories = categoryService.findAll();
         model.addAttribute("task", taskOptional.get());
         model.addAttribute("priorities", priorities);
+        model.addAttribute("categories", categories);
         return "tasks/edit";
     }
 
     @PostMapping("/edit")
     public String editTask(@ModelAttribute Task task,
+                           @RequestParam(name = "categoriesId") List<Integer> categoriesId,
                            HttpSession session,
                            Model model) {
         User user = (User) session.getAttribute("user");
-        boolean isUpdated = taskService.update(task, user);
+        boolean isUpdated = taskService.update(task, user, categoriesId);
         if (!isUpdated) {
             model.addAttribute("message", "Oshibka pri obnovlenii zadachi");
             return "errors/404";
